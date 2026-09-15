@@ -2,9 +2,9 @@
   {
     "domain": "postman.com",
     "company_name": "Postman",
-    "overview": "Postman is an API platform for building, testing, managing, and distributing APIs and services. It simplifies the API lifecycle, streamlines collaboration, and is designed for engineers and enterprise-scale use.",
-    "target_audience": "Developers, engineering teams, and organizations that build, test, manage, govern, and distribute APIs and services.",
-    "industry": "API platform and API lifecycle software",
+    "overview": "Postman is an API platform for building, testing, managing, and distributing APIs. It simplifies each step of the API lifecycle and streamlines collaboration so engineers and enterprises can create better APIs faster.",
+    "target_audience": "Developers, engineers, API teams, and enterprises looking to build and manage APIs at scale.",
+    "industry": "API Platform / Developer Tools",
     "contact": {
       "emails": [
         "info@postman.com",
@@ -14,7 +14,7 @@
       "phone_numbers": [
         "+1 415 796 6470",
         "+81-3-6843-3777",
-        "+1 888 616 1665"
+        "(888) 616-1665"
       ],
       "social_links": [
         "https://discord.gg/58aNNsRBGR",
@@ -29,7 +29,7 @@
     "leadership": [
       {
         "name": "Abhinav Asthana",
-        "title": "CEO and co-founder",
+        "title": "CEO and Co-founder",
         "linkedin_url": null
       },
       {
@@ -43,7 +43,7 @@
         "linkedin_url": null
       }
     ],
-    "data_confidence": 0.98,
+    "data_confidence": 0.9,
     "source_pages": [
       "https://www.postman.com/",
       "https://www.postman.com/company/about-postman/",
@@ -52,17 +52,17 @@
       "https://www.postman.com/pricing/"
     ],
     "fetch_method": "http",
-    "llm_model": "nex-agi/nex-n2.5-pro:free",
-    "tokens_used": 5119,
+    "llm_model": "nvidia/nemotron-3-super-120b-a12b:free",
+    "tokens_used": 5818,
     "estimated_cost_usd": 0.0,
     "error": null
   },
   {
     "domain": "supabase.com",
     "company_name": "Supabase",
-    "overview": "Supabase is an open-source Firebase alternative that provides a suite of managed services including a Postgres database, authentication with Row Level Security, edge functions, storage, realtime subscriptions, and vector embeddings. The platform enables developers to build scalable applications with instant APIs and a unified dashboard.",
-    "target_audience": "Developers, startups, and businesses building web and mobile applications who need a scalable backend infrastructure.",
-    "industry": "Backend-as-a-Service (BaaS)",
+    "overview": "Supabase is an open-source Postgres development platform that provides a suite of backend services including a hosted Postgres database, authentication, edge functions, storage, realtime subscriptions, vector embeddings, and instant REST APIs, enabling developers to build and scale applications quickly.",
+    "target_audience": "Developers and engineering teams building web and mobile applications, from startups to enterprises, seeking an open-source Firebase alternative with scalable backend services.",
+    "industry": "Cloud backend-as-a-service (BaaS), Developer tools, Platform-as-a-service (PaaS), Open source",
     "contact": {
       "emails": [
         "legal@supabase.com",
@@ -80,8 +80,24 @@
       ],
       "contact_page_url": "https://supabase.com/contact-us"
     },
-    "leadership": [],
-    "data_confidence": 0.8,
+    "leadership": [
+      {
+        "name": "Paul Copplestone",
+        "title": null,
+        "linkedin_url": null
+      },
+      {
+        "name": "Ant Wilson",
+        "title": null,
+        "linkedin_url": null
+      },
+      {
+        "name": "Tracy Lane",
+        "title": "General Counsel",
+        "linkedin_url": null
+      }
+    ],
+    "data_confidence": 0.75,
     "source_pages": [
       "https://supabase.com",
       "https://supabase.com/company",
@@ -91,16 +107,16 @@
     ],
     "fetch_method": "http",
     "llm_model": "nvidia/nemotron-3-super-120b-a12b:free",
-    "tokens_used": 8621,
+    "tokens_used": 8420,
     "estimated_cost_usd": 0.0,
     "error": null
   },
   {
     "domain": "vapi.ai",
     "company_name": "Vapi",
-    "overview": "Vapi provides a platform for building, deploying, and improving voice AI agents, offering unified orchestration, real-time monitoring, and enterprise-grade configurability for developers and enterprises.",
-    "target_audience": "Developers, engineering teams, and enterprises looking to build and scale voice AI agents.",
-    "industry": "Voice AI / Conversational AI / Telephony AI",
+    "overview": "Vapi provides a platform for building, deploying, and improving voice AI agents. It offers orchestration, real-time monitoring, enterprise-grade configurability, and integrations, enabling developers and enterprises to create voice agents quickly and at scale.",
+    "target_audience": "Developers, builders, and enterprises seeking to integrate voice AI agents into their products or customer support workflows.",
+    "industry": "Voice AI / Artificial Intelligence / SaaS",
     "contact": {
       "emails": [],
       "phone_numbers": [
@@ -123,7 +139,7 @@
     ],
     "fetch_method": "http",
     "llm_model": "nvidia/nemotron-3-super-120b-a12b:free",
-    "tokens_used": 5143,
+    "tokens_used": 5109,
     "estimated_cost_usd": 0.0,
     "error": null
   }
