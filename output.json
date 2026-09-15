@@ -1,0 +1,118 @@
+[
+  {
+    "domain": "postman.com",
+    "company_name": "Postman, Inc.",
+    "overview": "Postman provides an API platform that enables developers to build, test, manage, and distribute APIs, simplifying the API lifecycle and fostering collaboration.",
+    "target_audience": "Engineers, developers, and enterprise organizations",
+    "industry": "API Platform / Developer Tools",
+    "contact": {
+      "emails": [
+        "info@postman.com",
+        "info-jp@postman.com",
+        "help@postman.com"
+      ],
+      "phone_numbers": [
+        "+1 415 796 6470",
+        "+81-3-6843-3777",
+        "(888) 616-1665"
+      ],
+      "social_links": [
+        "https://discord.gg/58aNNsRBGR",
+        "https://www.youtube.com/postman",
+        "https://x.com/getpostman",
+        "https://www.linkedin.com/company/postman-platform",
+        "https://github.com/postmanlabs",
+        "https://www.instagram.com/getpostman"
+      ],
+      "contact_page_url": "https://www.postman.com/company/contact-us/"
+    },
+    "leadership": [
+      {
+        "name": "Abhinav Asthana",
+        "title": "CEO and Co-Founder",
+        "linkedin_url": null
+      },
+      {
+        "name": "Ankit Sobti",
+        "title": "Co-Founder",
+        "linkedin_url": null
+      },
+      {
+        "name": "Abhijit Kane",
+        "title": "Co-Founder",
+        "linkedin_url": null
+      }
+    ],
+    "source_pages": [
+      "https://www.postman.com/",
+      "https://www.postman.com/company/about-postman/",
+      "https://www.postman.com/company/contact-us/",
+      "https://www.postman.com/company/contact-sales/"
+    ],
+    "fetch_method": "http",
+    "llm_model": "nvidia/nemotron-3-super-120b-a12b:free",
+    "error": null
+  },
+  {
+    "domain": "supabase.com",
+    "company_name": "Supabase Inc",
+    "overview": "Supabase is a Postgres development platform that provides a suite of integrated tools including a Postgres database, authentication, data APIs, edge functions, realtime data synchronization, storage, and vector embeddings. It enables developers to build and scale applications quickly, from weekend projects to million-user services.",
+    "target_audience": "Developers and businesses building applications, ranging from startups to enterprises.",
+    "industry": "Database-as-a-Service (DBaaS)",
+    "contact": {
+      "emails": [
+        "legal@supabase.com",
+        "privacy@supabase.com",
+        "abuse@supabase.com",
+        "security@supabase.com",
+        "help-events@supabase.com"
+      ],
+      "phone_numbers": [],
+      "social_links": [
+        "https://github.com/supabase",
+        "https://twitter.com/supabase",
+        "https://youtube.com/c/supabase",
+        "https://www.instagram.com/supabasecom"
+      ],
+      "contact_page_url": "https://supabase.com/contact-us"
+    },
+    "leadership": [],
+    "source_pages": [
+      "https://supabase.com",
+      "https://supabase.com/company",
+      "https://supabase.com/contact-us",
+      "https://supabase.com/customers"
+    ],
+    "fetch_method": "http",
+    "llm_model": "nvidia/nemotron-3-super-120b-a12b:free",
+    "error": null
+  },
+  {
+    "domain": "vapi.ai",
+    "company_name": "Vapi, Inc.",
+    "overview": "Vapi provides a platform for building, deploying, and managing voice AI agents, enabling developers and enterprises to create scalable, compliant voice applications with features like orchestration, real-time monitoring, and enterprise-grade security.",
+    "target_audience": "Developers and enterprises seeking to build and deploy voice AI agents at scale.",
+    "industry": "Voice AI",
+    "contact": {
+      "emails": [],
+      "phone_numbers": [
+        "+1-844-439-8274"
+      ],
+      "social_links": [
+        "https://github.com/VapiAI",
+        "https://www.linkedin.com/company/vapi-ai",
+        "https://x.com/Vapi_AI"
+      ],
+      "contact_page_url": null
+    },
+    "leadership": [],
+    "source_pages": [
+      "https://vapi.ai",
+      "https://vapi.ai/sales",
+      "https://vapi.ai/customers"
+    ],
+    "fetch_method": "http",
+    "llm_model": "nvidia/nemotron-3-super-120b-a12b:free",
+    "error": null
+  }
+]
