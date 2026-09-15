@@ -1,10 +1,10 @@
 [
   {
     "domain": "postman.com",
-    "company_name": "Postman",
-    "overview": "Postman is an API platform that enables developers to develop, test, manage, and distribute APIs and services, simplifying the API lifecycle and streamlining collaboration.",
-    "target_audience": "Engineers, development teams, and enterprises building and using APIs.",
-    "industry": "API Platform",
+    "company_name": "Postman, Inc.",
+    "overview": "Postman is an API platform for building and using APIs. It simplifies each step of the API lifecycle and streamlines collaboration so you can create better APIs—faster.",
+    "target_audience": "Engineers, developers, and enterprises building, testing, managing, and distributing APIs.",
+    "industry": "API Platform / Developer Tools",
     "contact": {
       "emails": [
         "info@postman.com",
@@ -43,7 +43,7 @@
         "linkedin_url": null
       }
     ],
-    "data_confidence": 0.9,
+    "data_confidence": 0.85,
     "source_pages": [
       "https://www.postman.com/",
       "https://www.postman.com/company/about-postman/",
@@ -53,16 +53,16 @@
     ],
     "fetch_method": "http",
     "llm_model": "nvidia/nemotron-3-super-120b-a12b:free",
-    "tokens_used": 5967,
+    "tokens_used": 5474,
     "estimated_cost_usd": 0.0,
     "error": null
   },
   {
     "domain": "supabase.com",
     "company_name": "Supabase",
-    "overview": "Supabase is an open-source Firebase alternative that provides a hosted Postgres database with integrated authentication, edge functions, storage, realtime subscriptions, vector embeddings, and instant REST APIs, enabling developers to build and scale applications quickly.",
-    "target_audience": "Developers, startups, and businesses building web and mobile applications that need a scalable backend platform.",
-    "industry": "Cloud Platform / Database-as-a-Service / Backend-as-a-Service",
+    "overview": "Supabase provides a Postgres development platform offering database, authentication, edge functions, storage, realtime subscriptions, vector embeddings, and instant REST APIs.",
+    "target_audience": "Developers and companies building applications, from indie hackers to enterprises.",
+    "industry": "Developer tools / Platform-as-a-Service",
     "contact": {
       "emails": [
         "legal@supabase.com",
@@ -81,7 +81,7 @@
       "contact_page_url": "https://supabase.com/contact-us"
     },
     "leadership": [],
-    "data_confidence": 0.8,
+    "data_confidence": 0.75,
     "source_pages": [
       "https://supabase.com",
       "https://supabase.com/company",
@@ -91,15 +91,15 @@
     ],
     "fetch_method": "http",
     "llm_model": "nvidia/nemotron-3-super-120b-a12b:free",
-    "tokens_used": 7459,
+    "tokens_used": 7552,
     "estimated_cost_usd": 0.0,
     "error": null
   },
   {
     "domain": "vapi.ai",
     "company_name": "Vapi",
-    "overview": "Vapi provides a platform for building, deploying, and improving voice AI agents, enabling developers to create voice agents quickly with orchestration, real-time monitoring, and enterprise-grade configurability.",
-    "target_audience": "Developers, engineering teams, and enterprises building voice AI agents.",
+    "overview": "Vapi provides a platform for building, deploying, and managing voice AI agents, offering orchestration, real-time monitoring, telephony integration, and enterprise-grade scalability. Users can create voice agents for various use cases such as customer support, lead qualification, appointment scheduling, and more, with minimal infrastructure setup.",
+    "target_audience": "Developers and businesses looking to build voice AI agents, ranging from early-stage teams to large enterprises across industries such as automotive, healthcare, marketplace, staffing, and more.",
     "industry": "Voice AI / Conversational AI",
     "contact": {
       "emails": [],
@@ -129,7 +129,7 @@
     ],
     "fetch_method": "http",
     "llm_model": "nvidia/nemotron-3-super-120b-a12b:free",
-    "tokens_used": 5096,
+    "tokens_used": 5532,
     "estimated_cost_usd": 0.0,
     "error": null
   }

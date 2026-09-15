@@ -12,7 +12,8 @@ import logging
 import os
 import signal
 from contextlib import contextmanager
-from typing import Protocol
+from types import FrameType
+from typing import Any, Iterator, Protocol, cast
 
 import openai
 
@@ -25,14 +26,14 @@ MODEL_DEADLINE_SECONDS = 50
 
 
 @contextmanager
-def _wall_clock_deadline(seconds: int):
+def _wall_clock_deadline(seconds: int) -> Iterator[None]:
     """Hard cutoff via SIGALRM, since a congested free-tier gateway can trickle
     keep-alive bytes that reset httpx's read timeout and hang far past it."""
     if not hasattr(signal, "SIGALRM"):  # Windows: no per-call deadline, rely on the client timeout
         yield
         return
 
-    def _on_alarm(signum, frame):
+    def _on_alarm(signum: int, frame: FrameType | None) -> None:
         raise TimeoutError(f"exceeded {seconds}s wall-clock deadline")
 
     try:
@@ -79,7 +80,7 @@ DEFAULT_OPENROUTER_MODELS = (
 )
 
 
-def _inline_refs(node, defs: dict):
+def _inline_refs(node: Any, defs: dict[str, Any]) -> Any:
     """Recursively replace {"$ref": "#/$defs/X"} with X's own schema. Some
     OpenRouter providers' grammar-constrained decoders (observed: Nex AGI)
     reject $ref/$defs outright with a compile error, so a fully self-contained
@@ -97,13 +98,13 @@ def _inline_refs(node, defs: dict):
     return node
 
 
-def _build_tool_schema() -> dict:
+def _build_tool_schema() -> dict[str, Any]:
     schema = CompanyProfile.model_json_schema()
     for name in PIPELINE_FIELDS:
         schema.get("properties", {}).pop(name, None)
     if "required" in schema:
         schema["required"] = [name for name in schema["required"] if name not in PIPELINE_FIELDS]
-    return _inline_refs(schema, schema.get("$defs", {}))
+    return cast(dict[str, Any], _inline_refs(schema, schema.get("$defs", {})))
 
 
 def _build_prompt(domain: str, pages: list[FetchedPage]) -> str:
@@ -123,7 +124,7 @@ def _build_prompt(domain: str, pages: list[FetchedPage]) -> str:
 def _build_profile(
     domain: str,
     pages: list[FetchedPage],
-    tool_input: dict,
+    tool_input: dict[str, Any],
     model: str,
     tokens_used: int | None = None,
     estimated_cost_usd: float | None = None,
@@ -150,7 +151,7 @@ class LLMBackend(Protocol):
 
 
 class AnthropicBackend:
-    def __init__(self, client, model: str | None = None):
+    def __init__(self, client: Any, model: str | None = None) -> None:
         self.client = client
         self.model = model or os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5")
 
@@ -176,7 +177,7 @@ class OpenRouterBackend:
     """Tries each configured model in order, moving on when one is rate-limited,
     errors out, or doesn't return a usable tool call — free models do all three."""
 
-    def __init__(self, client, models: list[str] | None = None):
+    def __init__(self, client: Any, models: list[str] | None = None) -> None:
         self.client = client
         configured = os.environ.get("OPENROUTER_MODEL") or DEFAULT_OPENROUTER_MODELS
         self.models = models or [name.strip() for name in configured.split(",") if name.strip()]
