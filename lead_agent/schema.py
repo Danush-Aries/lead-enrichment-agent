@@ -31,7 +31,15 @@ class CompanyProfile(BaseModel):
     industry: Optional[str] = None
     contact: ContactInfo = Field(default_factory=ContactInfo)
     leadership: list[LeadershipMember] = Field(default_factory=list)
+    data_confidence: Optional[float] = Field(
+        default=None,
+        ge=0.0,
+        le=1.0,
+        description="Model's own estimate (0.0-1.0) of how complete/reliable this extraction is, given what the crawled pages actually contained",
+    )
     source_pages: list[str] = Field(default_factory=list, description="URLs actually crawled to produce this profile")
     fetch_method: Optional[str] = Field(default=None, description="'http', 'browser', or 'browser+http' — how the pages were retrieved")
     llm_model: Optional[str] = Field(default=None, description="Model that produced the extraction")
+    tokens_used: Optional[int] = Field(default=None, description="Total tokens (input+output) billed for this domain's extraction call")
+    estimated_cost_usd: Optional[float] = Field(default=None, description="Estimated USD cost of the extraction call; 0.0 for free-tier models")
     error: Optional[str] = Field(default=None, description="Set when extraction failed for this domain; other fields may be partial")

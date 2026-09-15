@@ -36,8 +36,9 @@ LINK_KEYWORDS = {
     "story": 3,
     "contact": 2,
     "customers": 1,
+    "pricing": 1,
 }
-SKIP_SECTIONS = {"blog", "docs", "changelog", "guides", "templates", "legal", "pricing"}
+SKIP_SECTIONS = {"blog", "docs", "changelog", "guides", "templates", "legal"}
 # Tried after homepage links, for sites whose nav doesn't link these pages.
 FALLBACK_PATHS = ["about", "about-us", "company", "team", "leadership", "contact", "contact-us"]
 SOCIAL_DOMAINS = (
@@ -113,8 +114,11 @@ def _parse_page(url: str, html: str, method: str) -> FetchedPage | None:
             href = urljoin(url, href)
         links.append((href, anchor.get_text(" ", strip=True)))
 
-    # Links are collected first so nav/footer contact links survive this.
-    for tag in soup(["script", "style", "noscript", "svg", "nav"]):
+    # Links are collected first so nav/footer contact links survive this —
+    # header/footer/nav are site-wide chrome, never page-specific content, so
+    # dropping them here cuts a lot of the "Home | Product | Pricing | ..."
+    # menu boilerplate that would otherwise burn LLM tokens for no signal.
+    for tag in soup(["script", "style", "noscript", "svg", "nav", "header", "footer"]):
         tag.decompose()
     lines = (line.strip() for line in soup.get_text("\n").splitlines())
     text = "\n".join(line for line in lines if line)
