@@ -8,14 +8,19 @@ instead of brittle regex/CSS-selector scraping.
 
 1. **Fetch** (`lead_agent/fetcher.py`) — fetches the homepage, then follows
    its actual nav links to find the most relevant company pages (about, team,
-   leadership, contact, ...), ranked by keyword match rather than guessing
-   fixed paths. Plain HTTP is tried first; a real headless Chrome instance
-   (via Playwright) kicks in only when a page is blocked (403/429/503),
-   fails outright, or comes back too thin to be real content (a common sign
-   of a JS-rendered single-page app). It also fingerprints each site's "not
-   found" page (by requesting a random nonexistent path) so pages that
-   return HTTP 200 with a soft-404 body — common on SPA-style sites — get
-   filtered out instead of being fed to the LLM as if they were real content.
+   leadership, contact, pricing, ...), ranked by keyword match rather than
+   guessing fixed paths. Plain HTTP is tried first; a real headless Chrome
+   instance (via Playwright) kicks in only when a page is blocked
+   (403/429/503), fails outright, or comes back too thin to be real content
+   (a common sign of a JS-rendered single-page app). It also fingerprints
+   each site's "not found" page (by requesting a random nonexistent path) so
+   pages that return HTTP 200 with a soft-404 body — common on SPA-style
+   sites — get filtered out instead of being fed to the LLM as if they were
+   real content. Extracted text drops `<script>/<style>/<nav>/<header>/
+   <footer>` before the LLM ever sees it, so site-wide chrome (menus, top
+   bars, footer link walls) doesn't burn tokens or dilute the signal — only
+   `<a href>` links are collected *before* that stripping, so contact/social
+   links that live in the header or footer are still captured.
 2. **Extract** (`lead_agent/extractor.py`) — sends the crawled page text to
    an LLM with a forced tool/function call whose input schema is generated
    directly from the `CompanyProfile` Pydantic model, so the output is
@@ -32,6 +37,14 @@ instead of brittle regex/CSS-selector scraping.
 3. **Orchestrate** (`lead_agent/agent.py`) — runs the above per domain,
    catching and recording per-domain failures instead of crashing the whole
    batch.
+
+Each profile also carries `data_confidence` (the model's own 0.0-1.0 estimate
+of how complete/reliable that extraction is, given what the crawled pages
+actually contained) and `tokens_used` / `estimated_cost_usd` for basic cost
+tracking. Cost is exact ($0.00) for free-tier OpenRouter models and left
+`null` for Anthropic/paid models rather than hardcoding a per-token rate that
+could go stale — `tokens_used` is always accurate since it comes straight
+from the API response.
 
 ## Setup
 

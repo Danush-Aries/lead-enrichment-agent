@@ -1,10 +1,10 @@
 [
   {
     "domain": "postman.com",
-    "company_name": "Postman, Inc.",
-    "overview": "Postman provides an API platform that enables developers to build, test, manage, and distribute APIs, simplifying the API lifecycle and fostering collaboration.",
-    "target_audience": "Engineers, developers, and enterprise organizations",
-    "industry": "API Platform / Developer Tools",
+    "company_name": "Postman",
+    "overview": "Postman is an API platform that enables developers to develop, test, manage, and distribute APIs and services, simplifying the API lifecycle and streamlining collaboration.",
+    "target_audience": "Engineers, development teams, and enterprises building and using APIs.",
+    "industry": "API Platform",
     "contact": {
       "emails": [
         "info@postman.com",
@@ -29,36 +29,40 @@
     "leadership": [
       {
         "name": "Abhinav Asthana",
-        "title": "CEO and Co-Founder",
+        "title": "CEO and co-founder",
         "linkedin_url": null
       },
       {
         "name": "Ankit Sobti",
-        "title": "Co-Founder",
+        "title": "co-founder",
         "linkedin_url": null
       },
       {
         "name": "Abhijit Kane",
-        "title": "Co-Founder",
+        "title": "co-founder",
         "linkedin_url": null
       }
     ],
+    "data_confidence": 0.9,
     "source_pages": [
       "https://www.postman.com/",
       "https://www.postman.com/company/about-postman/",
       "https://www.postman.com/company/contact-us/",
-      "https://www.postman.com/company/contact-sales/"
+      "https://www.postman.com/company/contact-sales/",
+      "https://www.postman.com/pricing/"
     ],
     "fetch_method": "http",
     "llm_model": "nvidia/nemotron-3-super-120b-a12b:free",
+    "tokens_used": 5967,
+    "estimated_cost_usd": 0.0,
     "error": null
   },
   {
     "domain": "supabase.com",
-    "company_name": "Supabase Inc",
-    "overview": "Supabase is a Postgres development platform that provides a suite of integrated tools including a Postgres database, authentication, data APIs, edge functions, realtime data synchronization, storage, and vector embeddings. It enables developers to build and scale applications quickly, from weekend projects to million-user services.",
-    "target_audience": "Developers and businesses building applications, ranging from startups to enterprises.",
-    "industry": "Database-as-a-Service (DBaaS)",
+    "company_name": "Supabase",
+    "overview": "Supabase is an open-source Firebase alternative that provides a hosted Postgres database with integrated authentication, edge functions, storage, realtime subscriptions, vector embeddings, and instant REST APIs, enabling developers to build and scale applications quickly.",
+    "target_audience": "Developers, startups, and businesses building web and mobile applications that need a scalable backend platform.",
+    "industry": "Cloud Platform / Database-as-a-Service / Backend-as-a-Service",
     "contact": {
       "emails": [
         "legal@supabase.com",
@@ -77,42 +81,56 @@
       "contact_page_url": "https://supabase.com/contact-us"
     },
     "leadership": [],
+    "data_confidence": 0.8,
     "source_pages": [
       "https://supabase.com",
       "https://supabase.com/company",
       "https://supabase.com/contact-us",
+      "https://supabase.com/pricing",
       "https://supabase.com/customers"
     ],
     "fetch_method": "http",
     "llm_model": "nvidia/nemotron-3-super-120b-a12b:free",
+    "tokens_used": 7459,
+    "estimated_cost_usd": 0.0,
     "error": null
   },
   {
     "domain": "vapi.ai",
-    "company_name": "Vapi, Inc.",
-    "overview": "Vapi provides a platform for building, deploying, and managing voice AI agents, enabling developers and enterprises to create scalable, compliant voice applications with features like orchestration, real-time monitoring, and enterprise-grade security.",
-    "target_audience": "Developers and enterprises seeking to build and deploy voice AI agents at scale.",
-    "industry": "Voice AI",
+    "company_name": "Vapi",
+    "overview": "Vapi provides a platform for building, deploying, and improving voice AI agents, enabling developers to create voice agents quickly with orchestration, real-time monitoring, and enterprise-grade configurability.",
+    "target_audience": "Developers, engineering teams, and enterprises building voice AI agents.",
+    "industry": "Voice AI / Conversational AI",
     "contact": {
       "emails": [],
       "phone_numbers": [
-        "+1-844-439-8274"
+        "+18444398274"
       ],
       "social_links": [
         "https://github.com/VapiAI",
         "https://www.linkedin.com/company/vapi-ai",
         "https://x.com/Vapi_AI"
       ],
-      "contact_page_url": null
+      "contact_page_url": "https://vapi.ai/sales"
     },
-    "leadership": [],
+    "leadership": [
+      {
+        "name": "Jason Mitura",
+        "title": "VP of Software Development",
+        "linkedin_url": null
+      }
+    ],
+    "data_confidence": 0.7,
     "source_pages": [
       "https://vapi.ai",
       "https://vapi.ai/sales",
+      "https://vapi.ai/pricing",
       "https://vapi.ai/customers"
     ],
     "fetch_method": "http",
     "llm_model": "nvidia/nemotron-3-super-120b-a12b:free",
+    "tokens_used": 5096,
+    "estimated_cost_usd": 0.0,
     "error": null
   }
 ]

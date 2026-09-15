@@ -55,14 +55,17 @@ SYSTEM_PROMPT = (
     "Leave a field empty/null rather than guessing or inferring information that "
     "isn't stated. Never fabricate emails, phone numbers, or URLs. Only attach a "
     "LinkedIn URL to a person when it appears in the provided links and the link "
-    "text or URL slug clearly identifies that person."
+    "text or URL slug clearly identifies that person. Set data_confidence to your "
+    "own honest estimate (0.0-1.0) of how complete and reliable this specific "
+    "extraction is — e.g. low if the pages barely mention leadership or contact "
+    "info, high if the about/contact pages were thorough and unambiguous."
 )
 
 TOOL_NAME = "record_company_profile"
 TOOL_DESCRIPTION = "Record the extracted company profile in a structured form."
 
 # Filled in by the pipeline, not the model.
-PIPELINE_FIELDS = ("domain", "source_pages", "fetch_method", "llm_model", "error")
+PIPELINE_FIELDS = ("domain", "source_pages", "fetch_method", "llm_model", "tokens_used", "estimated_cost_usd", "error")
 
 # All confirmed free + tool-calling + structured_outputs-capable at time of
 # writing. Free-tier availability shifts day to day, so this is deliberately
@@ -76,13 +79,31 @@ DEFAULT_OPENROUTER_MODELS = (
 )
 
 
+def _inline_refs(node, defs: dict):
+    """Recursively replace {"$ref": "#/$defs/X"} with X's own schema. Some
+    OpenRouter providers' grammar-constrained decoders (observed: Nex AGI)
+    reject $ref/$defs outright with a compile error, so a fully self-contained
+    schema is more broadly compatible than the $ref-based one Pydantic emits
+    by default for nested models like ContactInfo/LeadershipMember."""
+    if isinstance(node, dict):
+        ref = node.get("$ref")
+        if isinstance(ref, str) and ref.startswith("#/$defs/"):
+            resolved = _inline_refs(defs[ref.rsplit("/", 1)[-1]], defs)
+            extra = {k: _inline_refs(v, defs) for k, v in node.items() if k != "$ref"}
+            return {**resolved, **extra}
+        return {k: _inline_refs(v, defs) for k, v in node.items() if k != "$defs"}
+    if isinstance(node, list):
+        return [_inline_refs(item, defs) for item in node]
+    return node
+
+
 def _build_tool_schema() -> dict:
     schema = CompanyProfile.model_json_schema()
     for name in PIPELINE_FIELDS:
         schema.get("properties", {}).pop(name, None)
     if "required" in schema:
         schema["required"] = [name for name in schema["required"] if name not in PIPELINE_FIELDS]
-    return schema
+    return _inline_refs(schema, schema.get("$defs", {}))
 
 
 def _build_prompt(domain: str, pages: list[FetchedPage]) -> str:
@@ -99,7 +120,14 @@ def _build_prompt(domain: str, pages: list[FetchedPage]) -> str:
     return f"Domain: {domain}\n\nExtract a company profile from the following crawled pages.\n\n" + "\n\n".join(sections)
 
 
-def _build_profile(domain: str, pages: list[FetchedPage], tool_input: dict, model: str) -> CompanyProfile:
+def _build_profile(
+    domain: str,
+    pages: list[FetchedPage],
+    tool_input: dict,
+    model: str,
+    tokens_used: int | None = None,
+    estimated_cost_usd: float | None = None,
+) -> CompanyProfile:
     try:
         data = {key: value for key, value in dict(tool_input).items() if key not in PIPELINE_FIELDS}
         return CompanyProfile.model_validate(
@@ -109,6 +137,8 @@ def _build_profile(domain: str, pages: list[FetchedPage], tool_input: dict, mode
                 "source_pages": [page.url for page in pages],
                 "fetch_method": "+".join(sorted({page.method for page in pages})),
                 "llm_model": model,
+                "tokens_used": tokens_used,
+                "estimated_cost_usd": estimated_cost_usd,
             }
         )
     except Exception as exc:  # malformed model output shouldn't crash the run
@@ -136,7 +166,10 @@ class AnthropicBackend:
         tool_use = next((block for block in response.content if block.type == "tool_use"), None)
         if tool_use is None:
             return CompanyProfile(domain=domain, source_pages=[page.url for page in pages], error="Model did not return structured output")
-        return _build_profile(domain, pages, tool_use.input, response.model)
+        tokens_used = response.usage.input_tokens + response.usage.output_tokens
+        # Not hardcoding a $/token rate here — Anthropic's pricing can change and
+        # a stale guess baked into the code is worse than no number at all.
+        return _build_profile(domain, pages, tool_use.input, response.model, tokens_used=tokens_used)
 
 
 class OpenRouterBackend:
@@ -186,7 +219,12 @@ class OpenRouterBackend:
                 failures.append(f"{model}: malformed tool call arguments")
                 continue
 
-            profile = _build_profile(domain, pages, arguments, response.model or model)
+            tokens_used = response.usage.total_tokens if response.usage else None
+            # ":free" is a contractual guarantee of $0 cost, not an estimate. For a
+            # paid model we'd need its per-token rate — not hardcoded here since
+            # OpenRouter's paid catalog changes; left as None rather than a guess.
+            cost = 0.0 if model.endswith(":free") else None
+            profile = _build_profile(domain, pages, arguments, response.model or model, tokens_used=tokens_used, estimated_cost_usd=cost)
             if profile.error is None:
                 logger.info("%s succeeded for %s", model, domain)
                 return profile
