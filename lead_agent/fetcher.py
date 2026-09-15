@@ -20,6 +20,7 @@ from urllib.robotparser import RobotFileParser
 
 import httpx
 from bs4 import BeautifulSoup
+from playwright.sync_api import BrowserContext, Playwright
 from playwright.sync_api import Error as PlaywrightError
 from playwright.sync_api import sync_playwright
 
@@ -107,7 +108,7 @@ def _parse_page(url: str, html: str, method: str) -> FetchedPage | None:
     soup = BeautifulSoup(html, "lxml")
     links = []
     for anchor in soup.find_all("a", href=True):
-        href = anchor["href"].strip()
+        href = str(anchor["href"]).strip()
         if not href or href.startswith(("javascript:", "#")):
             continue
         if not href.startswith(("mailto:", "tel:")):
@@ -175,16 +176,16 @@ def _load_robots(base_url: str, client: httpx.Client) -> RobotFileParser | None:
 class BrowserSession:
     """Starts Chrome on first use and reuses it for the rest of the crawl."""
 
-    def __init__(self, headed: bool = False):
+    def __init__(self, headed: bool = False) -> None:
         self.headed = headed
-        self._playwright = None
-        self._context = None
+        self._playwright: Playwright | None = None
+        self._context: BrowserContext | None = None
         self._unavailable = False
 
     def __enter__(self) -> BrowserSession:
         return self
 
-    def __exit__(self, *exc_info) -> None:
+    def __exit__(self, *exc_info: object) -> None:
         self.close()
 
     def fetch(self, url: str) -> FetchedPage | None:
@@ -210,20 +211,22 @@ class BrowserSession:
             if tab is not None:
                 tab.close()
 
-    def _get_context(self):
+    def _get_context(self) -> BrowserContext | None:
         if self._context is not None or self._unavailable:
             return self._context
         profile_dir = os.environ.get("CHROME_PROFILE_DIR") or str(DEFAULT_PROFILE_DIR)
-        options = {"headless": not self.headed, "user_agent": USER_AGENT}
+        headless = not self.headed
         try:
             self._playwright = sync_playwright().start()
             try:
                 self._context = self._playwright.chromium.launch_persistent_context(
-                    profile_dir, channel="chrome", **options
+                    profile_dir, channel="chrome", headless=headless, user_agent=USER_AGENT
                 )
             except PlaywrightError:
                 logger.info("Chrome not found, using Playwright's bundled Chromium")
-                self._context = self._playwright.chromium.launch_persistent_context(profile_dir, **options)
+                self._context = self._playwright.chromium.launch_persistent_context(
+                    profile_dir, headless=headless, user_agent=USER_AGENT
+                )
             logger.info("Browser started (profile: %s)", profile_dir)
         except Exception as exc:
             logger.warning("Browser unavailable, continuing with HTTP results only: %s", exc)
