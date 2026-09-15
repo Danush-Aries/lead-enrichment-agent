@@ -1,50 +1,8 @@
 # Lead Enrichment Agent
 
-Crawls a company's own website and produces a structured profile: overview,
-target audience, contact info, and leadership — using an LLM for extraction
-instead of brittle regex/CSS-selector scraping.
-
-## How it works
-
-1. **Fetch** (`lead_agent/fetcher.py`) — fetches the homepage, then follows
-   its actual nav links to find the most relevant company pages (about, team,
-   leadership, contact, pricing, ...), ranked by keyword match rather than
-   guessing fixed paths. Plain HTTP is tried first; a real headless Chrome
-   instance (via Playwright) kicks in only when a page is blocked
-   (403/429/503), fails outright, or comes back too thin to be real content
-   (a common sign of a JS-rendered single-page app). It also fingerprints
-   each site's "not found" page (by requesting a random nonexistent path) so
-   pages that return HTTP 200 with a soft-404 body — common on SPA-style
-   sites — get filtered out instead of being fed to the LLM as if they were
-   real content. Extracted text drops `<script>/<style>/<nav>/<header>/
-   <footer>` before the LLM ever sees it, so site-wide chrome (menus, top
-   bars, footer link walls) doesn't burn tokens or dilute the signal — only
-   `<a href>` links are collected *before* that stripping, so contact/social
-   links that live in the header or footer are still captured.
-2. **Extract** (`lead_agent/extractor.py`) — sends the crawled page text to
-   an LLM with a forced tool/function call whose input schema is generated
-   directly from the `CompanyProfile` Pydantic model, so the output is
-   guaranteed to match the schema or the run reports a clear error. Supports
-   two backends: native Anthropic, or OpenRouter (OpenAI-compatible API,
-   useful for routing to free-tier models) — see Setup below. The OpenRouter
-   backend tries a short list of free models in order and moves on when one
-   is rate-limited, hangs, or declines to call the tool — free-tier models
-   are noticeably less reliable than a paid Claude/GPT call, so a single
-   model isn't enough to depend on. A hard wall-clock deadline per attempt
-   (`MODEL_DEADLINE_SECONDS` in `extractor.py`) guards against a gateway that
-   trickles keep-alive bytes and would otherwise hang well past the client's
-   own timeout.
-3. **Orchestrate** (`lead_agent/agent.py`) — runs the above per domain,
-   catching and recording per-domain failures instead of crashing the whole
-   batch.
-
-Each profile also carries `data_confidence` (the model's own 0.0-1.0 estimate
-of how complete/reliable that extraction is, given what the crawled pages
-actually contained) and `tokens_used` / `estimated_cost_usd` for basic cost
-tracking. Cost is exact ($0.00) for free-tier OpenRouter models and left
-`null` for Anthropic/paid models rather than hardcoding a per-token rate that
-could go stale — `tokens_used` is always accurate since it comes straight
-from the API response.
+Give it a company domain. It crawls the site and uses an LLM to pull out a
+structured profile: overview, target audience, contact info, and leadership —
+as JSON.
 
 ## Setup
 
@@ -52,58 +10,46 @@ from the API response.
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-playwright install chromium   # only needed if you don't have Chrome installed
-cp .env.example .env          # then fill in ANTHROPIC_API_KEY *or* OPENROUTER_API_KEY
+playwright install chromium   # skip if Chrome is already installed
+cp .env.example .env          # add ANTHROPIC_API_KEY or OPENROUTER_API_KEY
 ```
 
-**LLM provider**: set `ANTHROPIC_API_KEY` (console.anthropic.com) for native
-Claude, or `OPENROUTER_API_KEY` (openrouter.ai) to route through OpenRouter's
-free-tier models (a comma-separated fallback list, see
-`DEFAULT_OPENROUTER_MODELS` in `extractor.py`; override with `OPENROUTER_MODEL`
-to use specific model(s) instead). If both keys are set, Anthropic wins unless
-`LLM_PROVIDER` says otherwise. Anthropic is the more reliable option — the
-OpenRouter path exists for running this without a paid API key, at the cost
-of occasionally falling through several free models before one responds.
-
-## Usage
+## Run
 
 ```bash
-python main.py --domains postman.com supabase.com vapi.ai --output output.json
+python main.py --domains postman.com supabase.com vapi.ai -v
 ```
 
-Add `-v` for progress logging. Output is a JSON array of `CompanyProfile`
-objects (see `lead_agent/schema.py`), one per domain, written to the path
-given by `--output`.
+Output goes to `output.json` — one entry per domain (fields in `lead_agent/schema.py`).
 
-## Design decisions worth calling out
+## How it works
 
-- **LinkedIn is never scraped directly.** `leadership[].linkedin_url` is only
-  populated when a LinkedIn link is already present on the company's own
-  site. Scraping LinkedIn itself violates its ToS and risks account bans —
-  out of scope for this agent by design, not an oversight.
-- **Browser fallback uses real Chrome, not bundled headless Chromium**, via
-  Playwright's `channel="chrome"`. Falls back to bundled Chromium
-  automatically if Chrome isn't installed. The profile directory defaults to
-  a project-local `.chrome-profile/` folder (gitignored) so the agent is
-  reproducible on any machine and never fights with an already-open personal
-  Chrome window. See `.env.example` for pointing it at a real profile
-  instead.
-- **Failures are data, not crashes.** A domain that can't be fetched or
-  fails extraction gets a profile with `error` set rather than aborting the
-  batch — check `output.json` for any `"error"` fields after a run.
-- **No LinkedIn scraping, no data invented.** The system prompt explicitly
-  tells the model to leave a field null rather than guess — verified in
-  practice on vapi.ai, which has no public email and gets `"emails": []`
-  rather than a fabricated address.
+- **Crawl** — follows real nav links (about/team/contact/pricing) instead of
+  guessing paths. Skips soft-404 pages. Falls back to real Chrome for
+  JS-heavy or bot-blocked sites.
+- **Extract** — LLM call with a forced tool schema (Pydantic), so output
+  always matches the schema. Anthropic or OpenRouter (free-tier fallback
+  chain across 5 models).
+- **Resilient** — one domain failing never crashes the batch; it just gets
+  `"error"` set and the run continues.
 
-## Project structure
+## Notes
+
+- Never scrapes LinkedIn directly — only uses LinkedIn links already present
+  on the company's own site.
+- Never invents data — leaves a field empty rather than guessing (verified:
+  vapi.ai has no public email, output correctly shows `[]`, not a fake one).
+- Every profile includes `data_confidence` (0.0–1.0) and
+  `tokens_used` / `estimated_cost_usd`.
+
+## Structure
 
 ```
-main.py                  # CLI entrypoint
+main.py               entrypoint
 lead_agent/
-  fetcher.py              # HTTP + browser-fallback crawling
-  extractor.py             # LLM structured extraction
-  agent.py                 # per-domain orchestration
-  schema.py                 # Pydantic output schema
-output.json                # sample output (3 domains)
+  fetcher.py           crawling
+  extractor.py         LLM extraction
+  agent.py             orchestration
+  schema.py            output schema
+output.json            sample output (3 domains)
 ```
