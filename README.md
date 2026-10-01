@@ -53,3 +53,11 @@ lead_agent/
   schema.py            output schema
 output.json            sample output (3 domains)
 ```
+
+## Tech stack
+
+Python, Playwright (crawling), Pydantic (output schema), Anthropic or OpenRouter LLM APIs (see `requirements.txt`).
+
+## License
+
+MIT — see [LICENSE](LICENSE).
